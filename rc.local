@@ -1,0 +1,53 @@
+#!/bin/sh -e
+
+[ -d /home/openbts/openbts ] || exit 1
+
+PATH=$PATH:/usr/local/bin:/usr/local/sbin
+
+# start olsrd
+olsrd
+
+# this is for asterisk call record data, probably don't need this
+if [ ! -e /var/log/asterisk/cdr-csv ]; then
+        mkdir -p /var/log/asterisk/cdr-csv
+fi
+
+# start asterisk
+asterisk
+
+# create the tmpfs /var/run directory
+if [ ! -e /var/run/OpenBTS ]; then
+        mkdir /var/run/OpenBTS
+fi
+
+# not needed unless you enable Radio Resource LCS (Location Service) Protocol for OpenBTS
+if [ ! -e /var/run/rrlp ]; then
+        mkdir /var/run/rrlp
+        chmod 777 /var/run/rrlp
+fi
+
+# This script assumes that the following are installed in /OpenBTS:
+#  * OpenBTS
+#  * Transceiver
+#  * ezusb.ihx
+#  * fpga.rbf
+#  * runloop.sh for OpenBTS.
+
+# start OpenBTS
+cd /home/openbts/openbts/openbts/trunk/apps ; sudo screen -S OpenBTS -d -m ./runloop.OpenBTS.sh
+
+# This script assumes that the following are installed in /smqueue:
+#  * smqueue
+#  * smqueue.db
+#  * runloop.sh for smqueue
+
+# start smqueue
+#cd /OpenBTS ; sudo screen -S smqueue -d -m ./runloop.smqueue.sh
+
+# start the subscriber registry
+cd /home/openbts/openbts/subscriberRegistry/trunk ; sudo screen -S sipauth -d -m ./runloop.sipauthserve.sh
+
+# start Serval
+/home/openbts/serval-dna/servald start
+
+exit 0
