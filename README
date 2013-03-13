@@ -62,6 +62,13 @@ The Commotion-OpenBTS image was built with the following process:
 10. Create /etc/rc.local script to start components on boot 
      (example rc.local included in repo)
 
+==Further work==
+
+The Open Technology Institute is supporting the development of the following
+OpenBTS features by our partners:
+* GPRS: https://github.com/chemeris/openbts-p2.8
+* Handover: https://github.com/dmisol/openbts-p2.8/tree/handover
+
 ==Contact==
 
 For questions, email Dan Staples <danstaples AT opentechinstitute DOT org>
